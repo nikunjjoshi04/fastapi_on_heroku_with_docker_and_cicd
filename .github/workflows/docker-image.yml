@@ -19,13 +19,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Heroku login
+      - name: Heroku login, Build, Push, Release the application on heroku
         run: |
           cd ${DOCKERFILE_DIRECTORY}  
           echo ${HEROKU_API_KEY} | docker login --username=${HEROKU_EMAIL} registry.heroku.com --password-stdin
-      - name: Build the Docker image
-        run: docker build --file ${DOCKERFILE_NAME} ${DOCKER_OPTIONS} --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
-      - name: Push the Docker image to heroku
-        run: heroku container:push web --app ${HEROKU_APP_NAME}
-      - name: Release the application on heroku
-        run: heroku container:release web --app ${HEROKU_APP_NAME}
+          docker build --file ${DOCKERFILE_NAME} ${DOCKER_OPTIONS} --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
+          heroku container:push web --app ${HEROKU_APP_NAME}
+          heroku container:release web --app ${HEROKU_APP_NAME}
