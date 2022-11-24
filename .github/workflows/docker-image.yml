@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     env:
-      HEROKU_APP_NAME: fastapi-on-heroku-with-docker
+      HEROKU_APP_NAME: fastapi-docker-git-ci-heroku
       DOCKERFILE_DIRECTORY: "."
       HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
