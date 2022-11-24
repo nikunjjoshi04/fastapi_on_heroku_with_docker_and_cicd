@@ -1,32 +1,34 @@
-name: Docker Image CI
+name: Build Shiny Docker Image and Deploy to Heroku
+
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
-  build:
-
+  app1:
+    name: Build and deploy Shiny app
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-    - uses: actions/checkout@v3
-      env:
-        HEROKU_APP_NAME: fastapi-on-heroku-with-docker
-        DOCKERFILE_DIRECTORY: "."
-        HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        DOCKERFILE_NAME: "Dockerfile"
-        DOCKER_OPTIONS: "--no-cache"
-    - name: Heroku login
-      run: |
-        cd ${DOCKERFILE_DIRECTORY}  
-        echo ${HEROKU_API_KEY} | docker login --username=${HEROKU_EMAIL} registry.heroku.com --password-stdin
-    - name: Build the Docker image
-      run: docker build --file ${DOCKERFILE_NAME} ${DOCKER_OPTIONS} --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
-    - name: Push the Docker image to heroku
-      run: heroku container:push web --app ${HEROKU_APP_NAME}
-    - name: Release the applicarion on heroku
-      run: heroku container:release web --app ${HEROKU_APP_NAME}
-
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build and push Docker to Heroku
+        env:
+          HEROKU_APP_NAME: fastapi-on-heroku-with-docker
+          DOCKERFILE_DIRECTORY: "."
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          DOCKERFILE_NAME: "Dockerfile"
+          DOCKER_OPTIONS: "--no-cache"
+        run: |
+          cd ${DOCKERFILE_DIRECTORY}
+          echo ${HEROKU_API_KEY} | docker login \
+            --username=${HEROKU_EMAIL} \
+            registry.heroku.com \
+            --password-stdin
+          docker build \
+            --file ${DOCKERFILE_NAME} \
+            ${DOCKER_OPTIONS} \
+            --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
+          heroku container:push web --app ${HEROKU_APP_NAME}
+          heroku container:release web --app ${HEROKU_APP_NAME}
