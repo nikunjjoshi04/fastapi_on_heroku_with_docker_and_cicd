@@ -1,4 +1,4 @@
-name: Build Shiny Docker Image and Deploy to Heroku
+name: Build Python Docker Image and Deploy to Heroku
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  app1:
-    name: Build and deploy Shiny app
+  build:
+    name: Build and deploy Python app
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,13 +22,7 @@ jobs:
           DOCKER_OPTIONS: "--no-cache"
         run: |
           cd ${DOCKERFILE_DIRECTORY}
-          echo ${HEROKU_API_KEY} | docker login \
-            --username=${HEROKU_EMAIL} \
-            registry.heroku.com \
-            --password-stdin
-          docker build \
-            --file ${DOCKERFILE_NAME} \
-            ${DOCKER_OPTIONS} \
-            --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
+          echo ${HEROKU_API_KEY} | docker login --username=${HEROKU_EMAIL} registry.heroku.com --password-stdin
+          docker build --file ${DOCKERFILE_NAME} ${DOCKER_OPTIONS} --tag registry.heroku.com/${HEROKU_APP_NAME}/web .
           heroku container:push web --app ${HEROKU_APP_NAME}
           heroku container:release web --app ${HEROKU_APP_NAME}
