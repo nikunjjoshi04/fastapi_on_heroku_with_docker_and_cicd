@@ -7,19 +7,19 @@ on:
 
 jobs:
   build:
+    env:
+      HEROKU_APP_NAME: fastapi-on-heroku-with-docker
+      DOCKERFILE_DIRECTORY: "."
+      HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      DOCKERFILE_NAME: "Dockerfile"
+      DOCKER_OPTIONS: "--no-cache"
     name: Build and deploy Python app
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build and push Docker to Heroku
-        env:
-          HEROKU_APP_NAME: fastapi-on-heroku-with-docker
-          DOCKERFILE_DIRECTORY: "."
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          DOCKERFILE_NAME: "Dockerfile"
-          DOCKER_OPTIONS: "--no-cache"
         run: |
           cd ${DOCKERFILE_DIRECTORY}
           echo ${HEROKU_API_KEY} | docker login --username=${HEROKU_EMAIL} registry.heroku.com --password-stdin
